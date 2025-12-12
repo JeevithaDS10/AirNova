@@ -7,23 +7,20 @@ function getAuthHeaders() {
   return { Authorization: `Bearer ${token}` };
 }
 
-export async function registerUser(data) {
-  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+// frontend/src/services/api.js
+export async function registerUser(body) {
+  const res = await fetch("http://127.0.0.1:9000/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body: JSON.stringify(body),
   });
-
-  let body = {};
-  try { body = await response.json(); } catch { body = {}; }
-
-  if (!response.ok) {
-    const msg = body.detail || "Registration request failed";
-    throw new Error(msg);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data?.message || data?.error || JSON.stringify(data) || "Registration failed");
   }
-
-  return body;
+  return data;
 }
+
 
 export async function loginUser(data) {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {

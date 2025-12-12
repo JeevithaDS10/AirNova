@@ -2,39 +2,42 @@
 import React, { useState } from "react";
 import Login from "./Login";
 import Register from "./Register";
-import "./auth.css"; // optional - only if you have styles
+import "./auth-page.css"; // make sure this path is correct
 
-// Single entry for auth page. Only this file should render login/register UI.
 export default function AuthPage() {
-  const [mode, setMode] = useState("login"); // "login" | "register"
+  // default mode can be 'register' or 'login'
+  const [mode, setMode] = useState("register");
 
   return (
-    <div style={{ padding: 24 }}>
-      <div className="auth-container" style={{ maxWidth: 420 }}>
-        {/* top nav buttons (single pair) */}
-        <div className="auth-toggle" style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <div className="auth-tabs" role="tablist" aria-label="Auth tabs">
           <button
-            className={mode === "login" ? "active" : ""}
-            onClick={() => setMode("login")}
             type="button"
+            className={`tab-button ${mode === "login" ? "active" : ""}`}
+            onClick={() => setMode("login")}
+            aria-pressed={mode === "login"}
           >
             Login
           </button>
+
           <button
-            className={mode === "register" ? "active" : ""}
-            onClick={() => setMode("register")}
             type="button"
+            className={`tab-button ${mode === "register" ? "active" : ""}`}
+            onClick={() => setMode("register")}
+            aria-pressed={mode === "register"}
           >
             Register
           </button>
         </div>
 
-        {/* Switch between the two forms — only one rendered at a time */}
-        {mode === "login" ? (
-          <Login onSwitchMode={(m) => setMode(m)} />
-        ) : (
-          <Register onSwitchMode={(m) => setMode(m)} />
-        )}
+        <div className="auth-body">
+          {mode === "login" ? (
+            <Login onSwitch={() => setMode("register")} />
+          ) : (
+            <Register onSwitch={() => setMode("login")} />
+          )}
+        </div>
       </div>
     </div>
   );

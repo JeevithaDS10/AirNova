@@ -1,0 +1,93 @@
+/* ========== FULL PAGE BACKGROUND ========== */
+.auth-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #c9e7ff, #eaf3ff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  font-family: "Inter", sans-serif;
+}
+
+/* ========== MAIN CARD ========== */
+.auth-card {
+  background: #ffffff;
+  width: 420px;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+/* ========== TOP SWITCH BUTTONS ========== */
+.auth-switch {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.auth-switch button {
+  width: 48%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #e4ecff;
+  font-size: 16px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.auth-switch .active-tab {
+  background: #1a73e8;
+  color: white;
+  box-shadow: 0 4px 8px rgba(26, 115, 232, 0.3);
+}
+
+/* ========== FORM INPUTS ========== */
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  margin-bottom: 18px;
+  border: 1px solid #c7c7c7;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+input:focus {
+  border-color: #1a73e8;
+}
+
+/* ========== BUTTONS ========== */
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 10px;
+  transition: 0.2s;
+}
+
+.auth-btn:hover {
+  background: #155fc2;
+}
+
+/* ========== ANIMATION ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

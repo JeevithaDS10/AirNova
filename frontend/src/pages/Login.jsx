@@ -54,7 +54,9 @@ export default function Login({ onSwitchMode }) {
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </label>
 
-        <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
+<button type="submit" className="auth-btn">
+  {loading ? "Logging in..." : "Login"}
+</button>
       </form>
 
       <p>
@@ -63,3 +65,18 @@ export default function Login({ onSwitchMode }) {
     </div>
   );
 }
+
+// inside Login component render return
+{/* ...existing form markup... */}
+
+<p className="muted">
+  No account?{" "}
+  <button
+    type="button"
+    className="link-btn"
+    onClick={() => typeof props?.onSwitch === "function" ? props.onSwitch() : null}
+  >
+    Register
+  </button>
+</p>
+

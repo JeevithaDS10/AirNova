@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { registerUser } from "../services/api";
-import "./auth-page.css";
+import "../styles/auth-page.css";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -83,18 +83,3 @@ export default function Register() {
     </div>
   );
 }
-
-
-// inside Register component render return
-{/* ...existing form markup... */}
-
-<p className="muted">
-  Already have an account?{" "}
-  <button
-    type="button"
-    className="link-btn"
-    onClick={() => typeof props?.onSwitch === "function" ? props.onSwitch() : null}
-  >
-    Login
-  </button>
-</p>
