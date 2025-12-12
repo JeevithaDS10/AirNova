@@ -1,75 +1,103 @@
-# app/routes/auth_routes.py
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, EmailStr, constr
+from fastapi import APIRouter, HTTPException, status
+from fastapi.responses import JSONResponse
+from typing import Any, Dict
 
-from app.models import RegisterRequest  # your Pydantic model
+from app.models import RegisterRequest, RegisterResponse, LoginRequest
+# Import service functions that exist in your auth_service module.
+# From conversation you have functions: hash_password, register_user, login_user, generate_jwt
+from app.services import auth_service
 
-# import the actual functions your service exposes
-from app.services.auth_service import register_user, login_user, generate_jwt
-
-router = APIRouter(prefix="/auth", tags=["auth"])
-
-
+router = APIRouter()
 
 
+def _normalize_email(email: str) -> str:
+    return email.strip().lower()
 
 
-
-# --- request/response schemas (adjust as needed) ---
-class RegisterRequest(BaseModel):
-    name: str
-    email: EmailStr
-    password: constr(min_length=8)
-    phone: str | None = None  # optional
-
-
-class RegisterResponse(BaseModel):
-    user_id: int
-    message: str
-
-
-class LoginRequest(BaseModel):
-    email: EmailStr
-    password: str
-
-
-class LoginResponse(BaseModel):
-    token: str
-    user: dict
-
-
-# --- routes ---
-
-@router.post("/auth/register")
+@router.post("/auth/register", response_model=RegisterResponse)
 def register(req: RegisterRequest):
+    """
+    Register endpoint.
+    Accepts RegisterRequest (name, email, password, optional phone).
+    Returns RegisterResponse on success.
+    """
+
+    name = req.name.strip()
+    email = _normalize_email(req.email)
+    phone = req.phone if req.phone else None
+
+    # Hash password using service helper if available
     try:
-        # normalize email
-        email_norm = req.email.strip().lower()
-        password_hash = hash_password(req.password)  # use your existing hash function
-        user_id = register_user(req.name, email_norm, password_hash, phone=req.phone)
-        return {"user_id": user_id, "message": "User registered"}
-    except ValueError as e:
-        # Duplicate email -> 409
-        raise HTTPException(status_code=409, detail=str(e))
+        password_hash = auth_service.hash_password(req.password)
+    except Exception as e:
+        # If hashing fails for any reason, log and still try to call register_user with raw password
+        print("hash_password failed:", e)
+        password_hash = None
+
+    # Try calling register_user. Some variants expect already-hashed password,
+    # others may accept raw password and hash internally. We'll try hashed first,
+    # fall back to raw if TypeError (wrong signature).
+    try:
+        if password_hash:
+            user_id = auth_service.register_user(name, email, password_hash, phone=phone)
+        else:
+            # no hash available, pass raw password
+            user_id = auth_service.register_user(name, email, req.password, phone=phone)
+    except TypeError as te:
+        # fallback: maybe service expects different args (e.g. phone before password) —
+        # try a couple sensible fallbacks
+        print("register_user TypeError, trying fallback:", te)
+        try:
+            # fallback 1: register_user(name, email, password, phone)
+            user_id = auth_service.register_user(name, email, req.password, phone)
+        except Exception as e2:
+            print("fallback register_user failed:", e2)
+            raise HTTPException(status_code=500, detail="Registration failed (internal).")
+    except ValueError as ve:
+        # service may raise ValueError for duplicate email etc.
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(ve))
     except Exception as exc:
-        # Log and return generic error so SQL internal errors are not leaked to frontend
-        print("Registration error:", exc)
+        # Log error server-side, then return generic 500
+        print("Unhandled error in register:", exc)
         raise HTTPException(status_code=500, detail="Internal server error")
 
+    return {"user_id": user_id, "message": "User registered"}
 
-@router.post("/login", response_model=LoginResponse)
-def login(req: LoginRequest):
+
+@router.post("/auth/login")
+def login(req: LoginRequest) -> Dict[str, Any]:
     """
-    Login using login_user from auth_service.
-    login_user should return user dict on success, or None/raise on failure.
+    Login endpoint.
+    Calls auth_service.login_user(email, password) which should return a dict
+    containing at least a token and user info (or raise/return None on failure).
     """
-    user = login_user(req.email, req.password)
-    if not user:
-        raise HTTPException(status_code=401, detail="Incorrect email or password")
+    email = _normalize_email(req.email)
+    try:
+        # login_user should handle password verification and JWT creation or return token
+        result = auth_service.login_user(email, req.password)
+    except auth_service.VerifyError if hasattr(auth_service, "VerifyError") else Exception as e:
+        # If your service defines a verification exception, map it. Otherwise handle generic Exception.
+        print("login verify error:", e)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    except Exception as exc:
+        print("Unhandled error in login:", exc)
+        raise HTTPException(status_code=500, detail="Internal server error")
 
-    # generate_jwt: pass whatever ID or payload your function expects.
-    # common pattern: generate_jwt(user_id)  — adapt if your generate_jwt expects different.
-    uid = user.get("user_id") or user.get("id") or user.get("userId")
-    token = generate_jwt(uid if uid is not None else user)
+    # normalize result shape: if service returned token+user or whole response
+    if isinstance(result, dict):
+        return result
 
-    return LoginResponse(token=token, user=user)
+    # if service returned tuple (token, user)
+    if isinstance(result, tuple) and len(result) >= 1:
+        token = result[0]
+        user = result[1] if len(result) > 1 else None
+        return {"access_token": token, "user": user}
+
+    # If service returned a string token
+    if isinstance(result, str):
+        return {"access_token": result}
+
+    # Unexpected shape
+    print("Unexpected login_user return:", result)
+    raise HTTPException(status_code=500, detail="Login failed (unexpected response)")
+

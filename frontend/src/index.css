@@ -1,0 +1,161 @@
+/* Full-screen centered background */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.splash-wrapper {
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at top, #0b1220, #020617 60%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Column that keeps everything perfectly centered */
+.splash-center {
+  position: relative;
+  text-align: center;
+}
+
+/* ---------- PLANE ---------- */
+
+.plane-track {
+  position: absolute;
+  top: -80px;              /* plane line directly above logo */
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.plane-icon {
+  font-size: 5rem;         /* bigger plane */
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.7));
+  animation: plane-pull 3s ease-in-out forwards;
+}
+
+/* ---------- LOGO ---------- */
+
+.splash-logo {
+  margin: 0;
+  margin-top: 0;           /* directly under plane line */
+  font-size: 5.5rem;
+  font-weight: 900;
+  letter-spacing: 1.1rem;
+  color: #ffffff;
+  opacity: 0;
+  animation: logo-slide 3s ease-out forwards;
+}
+
+/* ---------- SUBTITLE ---------- */
+
+.splash-subtitle {
+  margin-top: 14px;
+  font-size: 1.1rem;
+  color: #9ca3af;
+  opacity: 0;
+  animation: subtitle-fade 1.2s ease-out 2.2s forwards;
+}
+
+/* ---------- ANIMATIONS ---------- */
+
+/* Plane: start far left, pass through center, go right & up */
+@keyframes plane-pull {
+  0% {
+    transform: translateX(-60vw) translateY(25px) rotate(-15deg) scale(1.1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(0) translateY(-5px) rotate(-5deg) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(60vw) translateY(-40px) rotate(10deg) scale(1.25);
+    opacity: 0;
+  }
+}
+
+/* Logo: starts off-screen left, arrives centered as plane passes center */
+@keyframes logo-slide {
+  0% {
+    transform: translateX(-60vw);
+    opacity: 0;
+  }
+  35% {
+    opacity: 0;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Subtitle just fades in after logo has arrived */
+@keyframes subtitle-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}.auth-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f5f7fb;
+}
+
+.auth-card {
+  background: white;
+  padding: 28px;
+  border-radius: 14px;
+  width: 340px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.auth-card h2 {
+  margin-bottom: 14px;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+}
+
+.auth-card button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
+
+.error {
+  color: red;
+  font-size: 0.85rem;
+}
+
+.crypto-note {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  color: #555;
+}
