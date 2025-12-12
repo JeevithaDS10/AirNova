@@ -3,118 +3,158 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../services/api";
 
-export default function Register() {
+export default function Register({ onSwitchMode }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
-
-  function simpleValidate() {
-    if (!name.trim()) return "Please enter your name";
-    if (!email.trim()) return "Please enter your email";
-    if (!password || password.length < 8)
-      return "Password must be at least 8 characters";
-    return null;
-  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
-    setSuccessMsg("");
-    const v = simpleValidate();
-    if (v) {
-      setError(v);
-      return;
-    }
-
+    setSuccess("");
     setLoading(true);
-    try {
-      // Normal payload expected by backend: { name, email, password, phone }
-      const res = await registerUser({
-        name: name.trim(),
-        email: email.trim(),
-        password,
-        phone: phone.trim() || undefined,
-      });
 
-      // backend might return success message or user id
-      // if registerUser threw, we'll be in catch block.
-      setSuccessMsg("Registration successful! Please login.");
-      // small delay and navigate to login
-      setTimeout(() => navigate("/login"), 900);
+    try {
+      console.log("Register: sending", { name, email, phone });
+      const res = await registerUser({ name, email, password, phone });
+
+      // If your backend returns a simple { user_id, message }:
+      if (res && (res.user_id || res.id || res.message)) {
+        setSuccess(res.message || "Registered successfully — please log in.");
+        // navigate to login after short delay so user sees message (optional)
+        setTimeout(() => {
+          if (onSwitchMode) onSwitchMode("login");
+          else navigate("/login");
+        }, 700);
+        return;
+      }
+
+      // If backend returns user/token (uncommon for register), handle similarly:
+      if (res.access_token && res.user) {
+        localStorage.setItem("airnova_token", res.access_token);
+        localStorage.setItem("airnova_user", JSON.stringify(res.user));
+        navigate("/dashboard");
+        return;
+      }
+
+      // fallback: show raw response for debugging
+      console.error("Register response (raw):", res);
+      setError("Registration completed but unexpected response format — check console.");
     } catch (err) {
-      // If `registerUser` throws Error with message, show that, otherwise stringify
-      setError(err?.message || JSON.stringify(err) || "Registration failed");
+      console.error("Register error:", err);
+      // if fetch failed the Error message is err.message; if backend returned JSON with detail, registerUser should have thrown with it
+      setError(err?.message || "Failed to register");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="auth-card">
-      <div className="auth-toggle" style={{ marginBottom: 8 }}>
-        <button onClick={() => navigate("/login")} type="button">Login</button>
-        <button className="active" type="button">Register</button>
+    <div className="auth-card" style={{ maxWidth: 380 }}>
+      {/* TOP toggle - only one pair here */}
+      <div className="auth-toggle" style={{ display: "flex", gap: 12, justifyContent: "center", marginBottom: 18 }}>
+        <button
+          className="btn-small" 
+          onClick={() => { if (onSwitchMode) onSwitchMode("login"); else navigate("/login"); }}
+          type="button"
+          style={{ padding: "8px 16px", borderRadius: 20, background: "#f2f7ff", border: "none" }}
+        >
+          Login
+        </button>
+
+        <button
+          className="btn-small active"
+          type="button"
+          style={{ padding: "8px 16px", borderRadius: 20, background: "#eaf0ff", border: "none" }}
+        >
+          Register
+        </button>
       </div>
 
-      <h2>Create Account</h2>
+      <h2 style={{ margin: "6px 0 12px" }}>Create Account</h2>
 
-      {error && <p className="auth-error" style={{ color: "#c62828" }}>{error}</p>}
-      {successMsg && <p style={{ color: "green" }}>{successMsg}</p>}
+      {error && <p className="auth-error" style={{ color: "#d33", marginBottom: 12 }}>{error}</p>}
+      {success && <p className="auth-success" style={{ color: "#1a7", marginBottom: 12 }}>{success}</p>}
 
       <form onSubmit={handleSubmit}>
-        <label>
+        <label style={{ display: "block", marginBottom: 10 }}>
           Full name
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            style={{ display: "block", width: "100%", padding: "10px", marginTop: 6 }}
           />
         </label>
 
-        <label>
+        <label style={{ display: "block", marginBottom: 10 }}>
           Email
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            style={{ display: "block", width: "100%", padding: "10px", marginTop: 6 }}
           />
         </label>
 
-        <label>
+        <label style={{ display: "block", marginBottom: 10 }}>
           Password
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            minLength={8}
+            style={{ display: "block", width: "100%", padding: "10px", marginTop: 6 }}
           />
         </label>
 
-        <label>
+        <label style={{ display: "block", marginBottom: 16 }}>
           Phone (optional)
           <input
-            type="text"
+            type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            style={{ display: "block", width: "100%", padding: "10px", marginTop: 6 }}
+            placeholder="9876543210"
           />
         </label>
 
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            width: "100%",
+            padding: "12px 16px",
+            borderRadius: 8,
+            background: "#1e63f7",
+            color: "#fff",
+            border: "none",
+            cursor: loading ? "default" : "pointer",
+          }}
+        >
           {loading ? "Registering..." : "Register"}
         </button>
       </form>
 
-      <p style={{ marginTop: 12 }}>
-        Already have an account?
-        <button onClick={() => navigate("/login")} type="button">Login</button>
+      <p style={{ marginTop: 14, textAlign: "center" }}>
+        Already have an account?{" "}
+        <button
+          onClick={() => { if (onSwitchMode) onSwitchMode("login"); else navigate("/login"); }}
+          style={{ background: "transparent", border: "none", color: "#1e63f7", cursor: "pointer", textDecoration: "underline" }}
+        >
+          Login
+        </button>
+      </p>
+
+      <p className="auth-note" style={{ marginTop: 10, fontSize: 13 }}>
+        🔐 Authentication uses <strong>Argon2id</strong> (password hashing) + <strong>JWT</strong>.
       </p>
     </div>
   );
