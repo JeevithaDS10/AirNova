@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Splash from "./pages/Splash";
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
+import SearchFlights from "./pages/SearchFlights";
 import Weather from "./pages/Weather";
 import PricePrediction from "./pages/PricePrediction";
 
@@ -15,6 +16,9 @@ export default function App() {
 
       {/* Post-login */}
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/search" element={<SearchFlights />} />
+
+
 
       {/* Smart features */}
       <Route path="/weather" element={<Weather />} />
