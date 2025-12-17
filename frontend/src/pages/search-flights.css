@@ -83,21 +83,22 @@ input {
 /* SEARCH BUTTON */
 .search-btn {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 18px;
   padding: 14px;
-  background: #1a73e8;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #1a73e8, #4285f4);
   color: white;
   border: none;
   border-radius: 10px;
-  font-size: 16px;
-  font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 8px 20px rgba(26, 115, 232, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .search-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(26, 115, 232, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(26, 115, 232, 0.45);
 }
 
 /* SMART INSIGHTS */
@@ -154,3 +155,50 @@ input {
   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
   font-size: 14px;
 }
+
+
+.popular-routes {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.routes-grid {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.routes-grid div {
+  background: white;
+  padding: 14px 18px;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  cursor: pointer;
+  font-weight: 500;
+  transition: transform 0.2s;
+}
+
+.routes-grid div:hover {
+  transform: translateY(-3px);
+  color: #1a73e8;
+}
+
+.search-btn.primary {
+  width: 100%;
+  background: linear-gradient(135deg, #1a73e8, #0f5bd8);
+  color: white;
+  padding: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(26,115,232,0.3);
+}
+
+.search-btn.primary:hover {
+  transform: translateY(-1px);
+}
+
+

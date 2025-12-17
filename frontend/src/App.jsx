@@ -3,6 +3,7 @@ import Splash from "./pages/Splash";
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
 import SearchFlights from "./pages/SearchFlights";
+import FlightResults from "./pages/FlightResults";
 import Weather from "./pages/Weather";
 import PricePrediction from "./pages/PricePrediction";
 
@@ -17,6 +18,8 @@ export default function App() {
       {/* Post-login */}
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/search" element={<SearchFlights />} />
+      <Route path="/results" element={<FlightResults />} />
+
 
 
 
