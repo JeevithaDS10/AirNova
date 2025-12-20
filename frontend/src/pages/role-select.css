@@ -1,0 +1,99 @@
+/* Page background */
+.role-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #d9ecff, #eef5ff);
+  font-family: "Inter", sans-serif;
+}
+
+/* Main card */
+.role-card-main {
+  background: #ffffff;
+  width: 520px;
+  padding: 40px 36px;
+  border-radius: 22px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: fadeUp 0.5s ease;
+}
+
+/* Header */
+.role-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.role-header h1 span {
+  color: #2563eb;
+}
+
+
+
+.tagline {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 30px;
+}
+
+/* Section title */
+.role-title {
+  font-size: 20px;
+  margin-bottom: 24px;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+/* Options layout */
+.role-options {
+  display: flex;
+  gap: 20px;
+}
+
+/* Role card */
+.role-option {
+  flex: 1;
+  padding: 26px 20px;
+  border-radius: 18px;
+  background: #f8fbff;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.role-option:hover {
+  border-color: #2563eb;
+  transform: translateY(-6px);
+  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2);
+}
+
+.role-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.role-option h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.role-option p {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.4;
+}
+
+/* Animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

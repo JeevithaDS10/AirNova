@@ -1,34 +1,31 @@
-from fastapi import APIRouter, HTTPException
-from app.services.graph_builder import build_graph
-from app.services.path_finder import dijkstra
-from app.services.airport_resolver import resolve_airport_code
-
+from fastapi import APIRouter, Query, HTTPException
+from app.services.flight_service import resolve_city_to_airport
+from app.services.path_finder import find_shortest_path
 
 router = APIRouter(prefix="/flights", tags=["Flights"])
+
 @router.get("/search")
-def search_flights(source: str, destination: str, date: str):
+def search_flights(
+    source: str = Query(...),
+    destination: str = Query(...),
+    date: str = Query(...)
+):
+    source_code = resolve_city_to_airport(source)
+    if not source_code:
+        raise HTTPException(status_code=404, detail="Source not found")
 
-    source_code = resolve_airport_code(source)
-    destination_code = resolve_airport_code(destination)
+    destination_code = resolve_city_to_airport(destination)
+    if not destination_code:
+        raise HTTPException(status_code=404, detail="Destination not found")
 
-    if not source_code or not destination_code:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid source or destination airport"
-        )
-
-    graph = build_graph()
-    cost, path = dijkstra(graph, source_code, destination_code)
-
-    if not path:
+    result = find_shortest_path(source_code, destination_code)
+    if not result:
         raise HTTPException(status_code=404, detail="No route found")
 
     return {
-        "source": source,
-        "destination": destination,
-        "source_code": source_code,
-        "destination_code": destination_code,
+        "source": source_code,
+        "destination": destination_code,
         "date": date,
-        "total_distance": cost,
-        "route": path
+        "total_distance": result["total_distance"],
+        "route": result["route"]
     }

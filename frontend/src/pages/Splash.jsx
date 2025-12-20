@@ -20,7 +20,7 @@ export default function Splash() {
         </div>
 
         {/* AIRNOVA text that is "brought in" by the plane */}
-        <h1 className="splash-logo">AIRNOVA</h1>
+        <h1 className="splash-logo">AERONOVA</h1>
 
         {/* Subtitle */}
         <p className="splash-subtitle">

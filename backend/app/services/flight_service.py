@@ -1,22 +1,17 @@
 from app.db import get_connection
 
-def get_flights_for_leg(source, destination, date):
+def resolve_city_to_airport(city_name: str):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("""
-        SELECT f.flight_id, f.flight_number, f.departure_time,
-               f.arrival_time, f.base_price, f.status
-        FROM flights f
-        JOIN routes r ON f.route_id = r.route_id
-        WHERE r.source = %s
-          AND r.destination = %s
-          AND DATE(f.departure_time) = %s
-    """, (source, destination, date))
-
-    flights = cursor.fetchall()
-
-    cursor.close()
+    cursor.execute(
+        "SELECT airport_code FROM airports WHERE city = %s",
+        (city_name,)
+    )
+    row = cursor.fetchone()
     conn.close()
 
-    return flights
+    if not row:
+        return None
+
+    return row["airport_code"]

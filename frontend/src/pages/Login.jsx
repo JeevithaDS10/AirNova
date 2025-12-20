@@ -1,9 +1,8 @@
-// src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/api";
 
-export default function Login({ onSwitchMode }) {
+export default function Login({ onSwitch }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,66 +16,64 @@ export default function Login({ onSwitchMode }) {
 
     try {
       const res = await loginUser({ email, password });
-      console.log("login response:", res);
 
-      // token / user shape normalization:
-      const token = res.access_token || res.raw?.token || res.raw?.access_token || null;
-      const user = res.user || res.raw?.user || (res.user ? res.user : null);
+      const token = res.token || res.access_token;
+      const user = res.user;
 
       if (token && user) {
-        localStorage.setItem("airnova_token", token);
-        localStorage.setItem("airnova_user", JSON.stringify(user));
+        localStorage.setItem("aeronova_token", token);
+        localStorage.setItem("aeronova_user", JSON.stringify(user));
         navigate("/dashboard");
       } else {
-        console.error("Login response missing token or user:", res);
-        setError("Login succeeded but server returned an unexpected response. Check console.");
+        setError("Unexpected server response");
       }
     } catch (err) {
-      console.error("Login error:", err);
-      setError(err.message || "Login failed");
+      setError("Invalid email or password");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div>
-      <h2>Login</h2>
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+    <>
+      <h2 className="auth-subtitle">Sign in to your account</h2>
+
+      {error && <p className="error-text">{error}</p>}
+
       <form onSubmit={handleSubmit}>
-        <label>
-          Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </label>
+        <label>Email</label>
+        <input
+          type="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-        <label>
-          Password
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </label>
+        <label>Password</label>
+        <input
+          type="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-<button type="submit" className="auth-btn">
-  {loading ? "Logging in..." : "Login"}
-</button>
+        <button type="submit" className="auth-btn" disabled={loading}>
+          {loading ? "Signing in..." : "Login"}
+        </button>
       </form>
 
-      <p>
-        No account? <button onClick={onSwitchMode}>Register</button>
-      </p>
-    </div>
+      {/* 👇 THIS IS THE TEXT YOU WERE LOOKING FOR */}
+      <p className="switch-text">New to AeroNova?</p>
+
+     <button
+  className="auth-btn secondary"
+  onClick={() => navigate("/register/role")}
+>
+  Create an account
+</button>
+
+    </>
   );
 }
-
-// inside Login component render return
-{/* ...existing form markup... */}
-
-<p className="muted">
-  No account?{" "}
-  <button
-    type="button"
-    className="link-btn"
-    onClick={() => typeof props?.onSwitch === "function" ? props.onSwitch() : null}
-  >
-    Register
-  </button>
-</p>
-

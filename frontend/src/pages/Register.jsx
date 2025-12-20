@@ -1,100 +1,112 @@
+// src/pages/Register.jsx
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { registerUser } from "../services/api";
 import "./auth-page.css";
 
 export default function Register() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  async function handleRegister(e) {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess("");
+  const role = location.state?.role; // CUSTOMER or CREW
 
-    try {
-      await registerUser({ name, email, password, phone });
-      setSuccess("Registration successful! You can now log in.");
-      setName("");
-      setEmail("");
-      setPhone("");
-      setPassword("");
-    } catch (err) {
-      setError(err.message || "Registration failed");
-    } finally {
-      setLoading(false);
-    }
-  }
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    crewRole: "",
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleRegister = async () => {
+    // later connect backend here
+    console.log("REGISTER DATA:", { ...form, role });
+
+    alert("Registration successful!");
+    navigate("/login"); // 🔁 redirect after success
+  };
 
   return (
-    <div>
-      <h2>Create Account</h2>
+    <div className="auth-page">
+      <div className="auth-card">
 
-      {error && <p className="error-text">{error}</p>}
-      {success && <p className="success-text">{success}</p>}
+        {/* TITLE */}
+        <h2 className="auth-title">Create your account</h2>
+        <p className="auth-subtitle">
+          Join AeroNova to book flights seamlessly
+        </p>
 
-      <form onSubmit={handleRegister}>
-        <label>Name</label>
-        <input
-          type="text"
-          placeholder="Enter full name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+        {/* FORM */}
+        <div className="auth-form">
+          <label>
+            Full Name
+            <input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Your name"
+            />
+          </label>
 
-        <label>Email</label>
-        <input
-          type="email"
-          placeholder="Enter email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+          <label>
+            Email
+            <input
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+            />
+          </label>
 
-        <label>Phone</label>
-        <input
-          type="text"
-          placeholder="Enter phone number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          required
-        />
+          <label>
+            Password
+            <input
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Create a password"
+            />
+          </label>
 
-        <label>Password</label>
-        <input
-          type="password"
-          placeholder="Create password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+          {/* 🔥 ONLY FOR CREW */}
+          {role === "CREW" && (
+            <label>
+              Crew Role
+              <select
+                name="crewRole"
+                value={form.crewRole}
+                onChange={handleChange}
+              >
+                <option value="">Select role</option>
+                <option value="PILOT">Pilot</option>
+                <option value="CABIN_CREW">Cabin Crew</option>
+                <option value="GROUND_STAFF">Ground Staff</option>
+                <option value="ADMIN">Admin</option>
+              </select>
+            </label>
+          )}
 
-        {/* THIS BUTTON NOW HAS THE CLASS YOU NEED */}
-        <button type="submit" className="auth-btn" disabled={loading}>
-          {loading ? "Registering..." : "Register"}
-        </button>
-      </form>
+          <button className="primary-btn" onClick={handleRegister}>
+            Register
+          </button>
+        </div>
+
+        {/* FOOTER */}
+        <div className="auth-footer">
+          Already have an account?{" "}
+          <span
+            style={{ color: "#2563eb", cursor: "pointer" }}
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </span>
+        </div>
+
+      </div>
     </div>
   );
 }
-
-
-// inside Register component render return
-{/* ...existing form markup... */}
-
-<p className="muted">
-  Already have an account?{" "}
-  <button
-    type="button"
-    className="link-btn"
-    onClick={() => typeof props?.onSwitch === "function" ? props.onSwitch() : null}
-  >
-    Login
-  </button>
-</p>

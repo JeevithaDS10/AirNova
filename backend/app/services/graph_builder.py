@@ -1,16 +1,17 @@
 from app.db import get_connection
-from collections import defaultdict
 
 def build_graph():
     """
-    Builds an adjacency list graph from routes table
+    Builds adjacency list graph from routes table.
     Graph format:
     {
-      'BLR': [('MAA', 290), ('HYD', 570)],
-      'MYQ': [('BLR', 150)]
+      'MYQ': [('BLR', 150)],
+      'BLR': [('HYD', 570)],
+      ...
     }
     """
-    graph = defaultdict(list)
+    graph = {}
+
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
@@ -19,16 +20,17 @@ def build_graph():
         FROM routes
     """)
 
-    routes = cursor.fetchall()
+    for row in cursor.fetchall():
+        src = row["source_airport"]
+        dst = row["destination_airport"]
+        dist = row["distance_km"]
 
-    for r in routes:
-        src = r["source_airport"]
-        dest = r["destination_airport"]
-        dist = r["distance_km"]
+        if src not in graph:
+            graph[src] = []
 
-        graph[src].append((dest, dist))
-        graph[dest].append((src, dist))  # bidirectional
+        graph[src].append((dst, dist))
 
     cursor.close()
     conn.close()
+
     return graph

@@ -8,23 +8,24 @@ export default function AuthPage() {
 
   return (
     <div className="auth-wrapper">
-      <div className="auth-card">
-        <div className="auth-tabs">
-          <button
-            className={mode === "login" ? "active" : ""}
-            onClick={() => setMode("login")}
-          >
-            Login
-          </button>
-          <button
-            className={mode === "register" ? "active" : ""}
-            onClick={() => setMode("register")}
-          >
-            Register
-          </button>
+      <div className="auth-card fade-in">
+        {/* Brand Header */}
+        <div className="brand-header">
+          <h1 className="brand-title">
+            ✈️ Welcome to <span>AeroNova</span>
+          </h1>
+          <p className="brand-tagline">
+            Secure, Smart & Seamless Flight Booking
+          </p>
         </div>
 
-        {mode === "login" ? <Login /> : <Register />}
+       
+
+        {mode === "login" ? (
+          <Login onSwitch={() => setMode("register")} />
+        ) : (
+          <Register onSwitch={() => setMode("login")} />
+        )}
       </div>
     </div>
   );
