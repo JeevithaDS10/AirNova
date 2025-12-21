@@ -1,55 +1,90 @@
-/* FULL PAGE BACKGROUND */
-.hero {
+.dashboard {
+  width: 100vw;
+  height: 100vh;
   position: relative;
-  height: calc(100vh - 70px); /* full screen minus navbar */
-  background: #f4f8fc;       /* SAME color everywhere */
   overflow: hidden;
+  background: #eaf3fa;
 }
 
-/* IMAGE – THIS FIXES BOTTOM ISSUE */
-.hero-plane {
+/* MAIN IMAGE – SLIGHTLY ENLARGED */
+.bg-main {
   position: absolute;
-  left: -20%;
-  bottom: -25%;              /* 🔥 THIS IS THE KEY */
-  width: 85%;
-  min-height: 120%;
-  object-fit: cover;
+  inset: -5%;               /* 🔥 this enlarges uniformly */
+
+  background-image: none;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  background-size: contain; /* keeps proportions */
+
+  transform: scale(1.08);   /* 🔥 fine-tuned zoom */
 }
 
-/* TEXT AREA */
-.hero-content {
+/* ===============================
+   DASHBOARD HERO TEXT (FIXED)
+   =============================== */
+
+.hero-text {
   position: absolute;
-  right: 6%;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 38%;
+  top: 33%;
+  right: 19.5%;          /* 🔥 pull text inside white block */
+
+  max-width: 420px;   /* 🔥 constrain width */
+  z-index: 6;
+
+  font-family: "Segoe UI", system-ui, sans-serif;
 }
 
-.greeting {
-  color: #2563eb;
-  font-weight: 500;
+/* GREETING */
+.hero-greeting {
+  font-size: 22px;        /* ⬆ slightly bigger */
+  font-weight: 600;
+  color: #000000;        /* ✅ black */
+  margin-bottom: 14px;
 }
 
-.hero-content h1 {
-  font-size: 54px;
-  line-height: 1.15;
-  margin: 14px 0;
-  color: #0f172a;
+
+/* MAIN HEADLINE */
+.hero-text h1 {
+  font-size: 40px;    /* 🔽 slightly reduced */
+  font-weight: 800;
+  line-height: 1.18;
+  color: #000;
 }
 
-.hero-content p {
+/* SUB TEXT */
+.hero-subtext {
+  margin-top: 16px;
+  font-size: 19px;
+  font-weight: 500;      /* ⬆ slightly bolder */
+  color: #444;
+}.btn-wrapper {
+  margin-top: 26px;
+  width: auto;
+}
+.search-btn {
+  margin-top: 24px;
+
+  padding: 5px 10px;          /* controls button size */
+  width: fit-content;          /* 🔥 button matches text length */
+  display: inline-block;       /* prevents stretching */
+
+  background: #2f80ed;
+  color: #fff;
+
   font-size: 16px;
-  color: #475569;
-  margin-bottom: 28px;
-}
+  font-weight: 600;
 
-.hero-content button {
-  background: #2563eb;
-  color: white;
-  padding: 14px 36px;
-  border-radius: 10px;
-  font-size: 16px;
   border: none;
+  border-radius: 10px;
+
   cursor: pointer;
-  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 8px 20px rgba(47, 128, 237, 0.35);
+
+  transition: all 0.25s ease;
+}
+
+.search-btn:hover {
+  background: #1f6fe0;
+  transform: translateY(-2px);
 }
